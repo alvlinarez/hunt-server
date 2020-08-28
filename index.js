@@ -10,6 +10,8 @@ const config = require('./config/env');
 const connectionDB = require('./config/db');
 // routes
 const authRoutes = require('./routes/auth');
+const productRoutes = require('./routes/product');
+const commentRoutes = require('./routes/comment');
 
 // Custom middleware
 const notFoundHandler = require('./utils/middleware/notFoundHandler');
@@ -27,6 +29,8 @@ app.use(cookieParser());
 
 // routes
 app.use('/api/auth', authRoutes);
+app.use('/api/product', productRoutes);
+app.use('/api/comment', commentRoutes);
 
 // 404 middleware
 app.use(notFoundHandler);
