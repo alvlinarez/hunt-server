@@ -28,3 +28,6 @@ yarn-error.log*
 .env.production.local
 
 /.idea
+!uploads/images/
+uploads/images/*
+

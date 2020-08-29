@@ -10,6 +10,7 @@ const config = require('./config/env');
 const connectionDB = require('./config/db');
 // routes
 const authRoutes = require('./routes/auth');
+const uploadRoutes = require('./routes/upload');
 const productRoutes = require('./routes/product');
 const commentRoutes = require('./routes/comment');
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 
 // routes
 app.use('/api/auth', authRoutes);
+app.use('/api/upload', uploadRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/comment', commentRoutes);
 
