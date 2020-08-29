@@ -103,13 +103,16 @@ exports.voteProduct = async (req, res) => {
   const { id: userId } = req.user;
   try {
     let product = await Product.findOneAndUpdate(
-      { _id: productId },
+      { _id: productId, hasVoted: { $ne: userId } },
       { $addToSet: { hasVoted: userId }, $inc: { votes: 1 } },
       { new: true }
     );
     if (!product) {
-      return res.status(401).json({ error: 'Product not found' });
+      return res
+        .status(401)
+        .json({ error: 'Product not found or vote already exists' });
     }
+    return res.status(200).json({ product });
   } catch (e) {
     console.log(e);
     return res.status(500).json({ error: 'Internal server error' });
@@ -124,13 +127,16 @@ exports.unvoteProduct = async (req, res) => {
   const { id: userId } = req.user;
   try {
     let product = await Product.findOneAndUpdate(
-      { _id: productId },
+      { _id: productId, hasVoted: userId },
       { $pull: { hasVoted: userId }, $inc: { votes: -1 } },
       { new: true }
     );
     if (!product) {
-      return res.status(401).json({ error: 'Product not found' });
+      return res
+        .status(401)
+        .json({ error: 'Product not found or not voted yet' });
     }
+    return res.status(200).json({ product });
   } catch (e) {
     console.log(e);
     return res.status(500).json({ error: 'Internal server error' });
