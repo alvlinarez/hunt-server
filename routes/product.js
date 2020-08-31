@@ -29,7 +29,7 @@ router.put(
   productController.updateProduct
 );
 
-router.put(
+router.post(
   '/:productId/addComment',
   auth,
   productController.addCommentToProduct

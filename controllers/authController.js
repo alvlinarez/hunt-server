@@ -77,7 +77,7 @@ exports.signUp = async (req, res) => {
 };
 
 exports.authenticatedUser = (req, res) => {
-  const token = req.cookies.token;
+  const { token } = req.body;
   if (!token) {
     return res.status(200).json({});
   }
