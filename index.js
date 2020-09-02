@@ -39,6 +39,8 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/comment', commentRoutes);
 
+app.use('/public', express.static('public'));
+
 // 404 middleware
 app.use(notFoundHandler);
 

@@ -9,9 +9,7 @@ const {
   createAndUpdateProductValidator
 } = require('../utils/middleware/validators/product');
 
-router.get('/', auth, productController.getProducts);
-
-router.get('/:productId', auth, productController.getProduct);
+router.get('/', productController.getProducts);
 
 router.post(
   '/',

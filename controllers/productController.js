@@ -2,32 +2,35 @@ const Product = require('../models/Product');
 const Comment = require('../models/Comment');
 
 exports.getProducts = async (req, res) => {
-  const { id: userId } = req.user;
+  const { userId, productId, newProducts } = req.query; // Get one Product
   try {
-    const products = await Product.find({ creator: userId });
-    if (!products) {
-      return res.status(401).json({ error: 'No products found' });
+    if (productId) {
+      let product;
+      if (userId) {
+        product = await Product.findOne({ _id: productId, creator: userId });
+      } else {
+        product = await Product.findOne({ _id: productId });
+      }
+      if (!product) {
+        return res.status(401).json({ error: 'No product found' });
+      }
+      return res.status(200).json({ product });
+    } else {
+      let products;
+      if (userId) {
+        products = await Product.find({ _id: userId });
+      } else {
+        products = newProducts // getting the last products
+          ? await Product.find().sort({ createdAt: 1 })
+          : await Product.find();
+      }
+      if (!products) {
+        return res.status(401).json({ error: 'No products found' });
+      }
+      return res.status(200).json({ products });
     }
-    return res.status(200).json({ products });
   } catch (e) {
     console.log(e);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-exports.getProduct = async (req, res) => {
-  const { productId } = req.params;
-  const { id: userId } = req.user;
-  if (!productId) {
-    return res.status(401).json({ error: 'productId required' });
-  }
-  try {
-    const product = await Product.findOne({ _id: productId, creator: userId });
-    if (!product) {
-      return res.status(401).json({ error: 'Product not found' });
-    }
-    return res.status(200).json({ product });
-  } catch (e) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -67,7 +70,7 @@ exports.updateProduct = async (req, res) => {
     return res.status(401).json({ error: 'productId required' });
   }
   const { id: userId } = req.user;
-  const { name, description, company, url, urlImage, votes } = req.body;
+  const { name, description, company, url, urlImage } = req.body;
   try {
     let product = await Product.findOneAndUpdate(
       {
@@ -160,15 +163,17 @@ exports.addCommentToProduct = async (req, res) => {
     }
     let comment = new Comment({ message, creator: userId });
     await comment.save();
+    comment = comment.toJSON();
     product = await Product.findOneAndUpdate(
       { _id: productId },
-      { $addToSet: { comments: comment._id } },
+      { $addToSet: { comments: comment.id } },
       { new: true }
     );
+    let commentAdded = await Comment.findOne({ _id: comment.id });
     if (!product) {
       return res.status(401).json({ error: 'Product not found' });
     }
-    return res.status(200).json({ product });
+    return res.status(200).json({ product, commentAdded });
   } catch (e) {
     console.log(e);
     return res.status(500).json({ error: 'Internal server error' });
