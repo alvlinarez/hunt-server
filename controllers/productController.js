@@ -2,7 +2,7 @@ const Product = require('../models/Product');
 const Comment = require('../models/Comment');
 
 exports.getProducts = async (req, res) => {
-  const { userId, productId, newProducts } = req.query; // Get one Product
+  const { userId, productId, populars } = req.query; // Get one Product
   try {
     if (productId) {
       let product;
@@ -20,8 +20,8 @@ exports.getProducts = async (req, res) => {
       if (userId) {
         products = await Product.find({ _id: userId });
       } else {
-        products = newProducts // getting the last products
-          ? await Product.find().sort({ createdAt: 1 })
+        products = populars // getting the 10 most voted products
+          ? await Product.find().sort({ hasVoted: -1 }).limit(10)
           : await Product.find();
       }
       if (!products) {

@@ -7,6 +7,7 @@ const auth = require('../utils/middleware/auth');
 const { runValidation } = require('../utils/middleware/validators');
 const {
   userSignInValidator,
+  userSignInProviderValidator,
   userSignUpValidator
 } = require('../utils/middleware/validators/auth');
 
@@ -16,6 +17,14 @@ router.post(
   userSignInValidator,
   runValidation,
   authController.signIn
+);
+
+// Sign in with Facebook and Google
+router.post(
+  '/signin-provider',
+  userSignInProviderValidator,
+  runValidation,
+  authController.signInProvider
 );
 
 // Sign up route
